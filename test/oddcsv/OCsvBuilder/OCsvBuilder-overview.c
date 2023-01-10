@@ -29,8 +29,8 @@ int main( void )
    append_csv_row_o( b, header );
    for_each_c_( hero const*, hero, heros )
    {
-      append_csv_chars_cell_o_( b, hero->name );
-      append_csv_chars_cell_o_( b, hero->alter_ego );
+      append_csv_cell_o_( b, hero->name );
+      append_csv_cell_o_( b, hero->alter_ego );
       append_csv_int64_cell_o_( b, hero->year );
       finish_csv_row_o( b );
 

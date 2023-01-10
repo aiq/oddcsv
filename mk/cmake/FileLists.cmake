@@ -23,6 +23,7 @@ set( SRC_FILES
 ################################################################################
 set( TEST_FILES
    # OCsvBuilder
+   ${TEST_DIR}/oddcsv/OCsvBuilder/append_csv_row.c
    ${TEST_DIR}/oddcsv/OCsvBuilder/OCsvBuilder-overview.c
    # oCsvCell
 #   ${TEST_DIR}/oddcsv/OJsonBuilder/append_json_bool_value.c
