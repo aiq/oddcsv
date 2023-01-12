@@ -23,9 +23,9 @@ typedef struct oCsvRow oCsvRow;
 struct oCsvTable
 {
    cBytes data;
-   int64_t maxRowSize;
    int64_t rows;
    int64_t cols;
+   int64_t maxRowSize;
 };
 typedef struct oCsvTable oCsvTable;
 
@@ -35,10 +35,10 @@ typedef struct oCsvTable oCsvTable;
 
 *******************************************************************************/
 
-ODDCSV_API bool make_csv_table_o( oCsvTable table[static 1],
-                                  cVarChars data,
-                                  oCsvParseCfg cfg,
-                                  cErrorStack es[static 1] );
+ODDCSV_API bool turn_into_csv_table_o( cVarChars data,
+                                       oCsvTable table[static 1],
+                                       oCsvParseCfg cfg,
+                                       cErrorStack es[static 1] );
 
 /*******************************************************************************
 

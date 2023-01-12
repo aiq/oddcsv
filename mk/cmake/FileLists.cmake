@@ -6,8 +6,8 @@ set( INC_FILES
 
    ${INC_DIR}/oddcsv/misc.h
    ${INC_DIR}/oddcsv/OCsvBuilder.h
-#   ${INC_DIR}/oddcsv/oCsvCell.h
    ${INC_DIR}/oddcsv/oCsvParser.h
+   ${INC_DIR}/oddcsv/oCsvTable.h
 )
 
 ################################################################################
@@ -16,8 +16,8 @@ set( INC_FILES
 set( SRC_FILES
    ${SRC_DIR}/oddcsv/misc.c
    ${SRC_DIR}/oddcsv/OCsvBuilder.c
-#   ${SRC_DIR}/oddcsv/oCsvCell.c
    ${SRC_DIR}/oddcsv/oCsvParser.c
+   ${SRC_DIR}/oddcsv/oCsvTable.c
 )
 
 ################################################################################
