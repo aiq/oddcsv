@@ -33,7 +33,7 @@ int main( void )
       while ( not finished_csv_o( &p ) )
       {
          bool first = true;
-         while ( in_cvs_row_o( &p ) )
+         while ( in_csv_row_o( &p ) )
          {
             if ( not first )
             {

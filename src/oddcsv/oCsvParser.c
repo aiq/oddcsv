@@ -56,7 +56,7 @@ bool move_to_next_csv_row_o( oCsvParser p[static 1] )
           move_if_chars_c_( &(p->sca), "\r\n" );
 }
 
-bool in_cvs_row_o( oCsvParser p[static 1] )
+bool in_csv_row_o( oCsvParser p[static 1] )
 {
    return not on_char_c( &(p->sca), '\n' ) and
           not on_char_c( &(p->sca), '\r' ) and
@@ -134,7 +134,7 @@ bool parse_csv_string_row_o( oCsvParser p[static 1], CStringList* row )
       return false;
    }
 
-   while ( in_cvs_row_o( p ) )
+   while ( in_csv_row_o( p ) )
    {
       cChars cell;
       if ( not view_raw_csv_cell_o( p, &cell ) )
