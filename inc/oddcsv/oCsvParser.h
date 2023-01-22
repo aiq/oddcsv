@@ -12,6 +12,14 @@
  
 *******************************************************************************/
 
+struct oCsvParseCfg
+{
+   cRune sep;
+   cRune comment;
+   bool trim;
+};
+typedef struct oCsvParseCfg oCsvParseCfg;
+
 struct oCsvParser
 {
    oCsvParseCfg cfg;

@@ -13,6 +13,14 @@
  
 *******************************************************************************/
 
+struct oCsvBuildCfg
+{
+   cRune sep;
+   bool useCRLF;
+   bool quoteSpace;
+};
+typedef struct oCsvBuildCfg oCsvBuildCfg;
+
 struct oCsvBuilderCfg
 {
    cRune sep;
