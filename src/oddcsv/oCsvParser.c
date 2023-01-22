@@ -61,17 +61,12 @@ bool finished_csv_o( oCsvParser p[static 1] )
    return res;
 }
 
-bool move_to_next_csv_row_o( oCsvParser p[static 1] )
-{
-   return true;
-}
-
 bool finished_csv_row_o( oCsvParser p[static 1] )
 {
    return p->finRow;
 }
 
-bool view_raw_csv_cell_o( oCsvParser p[static 1], cChars cell[static 1] )
+bool view_csv_cell_o( oCsvParser p[static 1], oCsvCell cell[static 1] )
 {
    skip_spaces( p );
 
@@ -83,11 +78,11 @@ bool view_raw_csv_cell_o( oCsvParser p[static 1], cChars cell[static 1] )
          move_scanner_c( &(p->sca), 1 );
       }
       char const* end = p->sca.mem;
-      *cell = (cChars)atween_c_( beg, end );
+      cell->x = (cChars)atween_c_( beg, end );
 
       if ( p->cfg.trim )
       {
-         *cell = trim_any_char_right_c_( *cell , " " );
+         cell->x = trim_any_char_right_c_( cell->x, " " );
       }
       skip_cell_end( p );
       return true;
@@ -116,17 +111,41 @@ bool view_raw_csv_cell_o( oCsvParser p[static 1], cChars cell[static 1] )
          return false; // ERROR: invalid cell end
       }
 
-      *cell = (cChars)atween_c_( beg, end );
+      cell->x = (cChars)atween_c_( beg, end );
       skip_spaces( p );
       skip_cell_end( p );
       return true;
    }
 }
 
+bool view_csv_row_o( oCsvParser p[static 1], oVarCsvRow row[static 1] )
+{
+   int64_t i = 0;
+   while ( not finished_csv_row_o( p ) )
+   {
+      if ( i >= row->s )
+      {
+         return false; // ERROR: not inough space in row
+      }
+
+      oCsvCell cell;
+      if ( not view_csv_cell_o( p, &cell ) )
+      {
+         return false; // ERROR: pass-through
+      }
+
+      row->v[i] = cell;
+      ++i;
+   }
+   p->finRow = false;
+   row->s = i;
+   return true;
+}
+
 /*******************************************************************************
 
 *******************************************************************************/
-
+/*
 static bool clear_string_list( CStringList* row )
 {
    cVecInfo const* info = info_of_string_list_c( row );
@@ -137,53 +156,8 @@ static bool clear_string_list( CStringList* row )
    }
    return true;
 }
-
+*/
 bool parse_csv_string_row_o( oCsvParser p[static 1], CStringList* row )
 {
-   if ( not clear_string_list( row ) )
-   {
-      return false;
-   }
-
-   while ( not finished_csv_row_o( p ) )
-   {
-      cChars cell;
-      if ( not view_raw_csv_cell_o( p, &cell ) )
-      {
-         return false;
-      }
-
-      cRecorder* rec = &recorder_c_( 8 );
-      if ( not alloc_recorder_mem_c( rec, cell.s+1 ) )
-      {
-         return false;
-      }
-
-      store_raw_csv_cell_o( cell, rec );
-      record_char_c( rec, '\0' );
-      if ( rec->space > 0 )
-      {
-         if ( not realloc_recorder_mem_c( rec, rec->pos ) )
-         {
-            free_recorder_mem_c( rec );
-            return false;
-         }
-      }
-
-      reset_recorder_c( rec );
-      CString* str = adopt_cstr_c( rec->mem );
-      if ( str == NULL )
-      {
-         free_recorder_mem_c( rec );
-         return false;
-      }
-
-      if ( not add_to_string_list_c( row, str ) )
-      {
-         release_c( str );
-         return false;
-      }
-   }
-
-   return true;
+   return false;
 }

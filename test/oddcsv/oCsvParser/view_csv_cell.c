@@ -40,9 +40,9 @@ int main( void )
             {
                record_char_c( rec, t->cellSep );
             }
-            cChars cell;
-            require_c_( view_raw_csv_cell_o( &p, &cell ) );
-            record_chars_c( rec, cell );
+            oCsvCell cell;
+            require_c_( view_csv_cell_o( &p, &cell ) );
+            record_chars_c( rec, cell.x );
             first = false;
          }
          if ( not finished_csv_o( &p ) )

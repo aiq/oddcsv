@@ -4,7 +4,7 @@
 #include "clingo/io/cScanner.h"
 #include "clingo/string/CStringList.h"
 #include "oddcsv/apidecl.h"
-#include "oddcsv/misc.h"
+#include "oddcsv/oCsvCell.h"
 
 /*******************************************************************************
 ********************************************************* Types and Definitions
@@ -47,8 +47,11 @@ ODDCSV_API bool finished_csv_o( oCsvParser p[static 1] );
 
 ODDCSV_API bool finished_csv_row_o( oCsvParser p[static 1] );
 
-ODDCSV_API bool view_raw_csv_cell_o( oCsvParser p[static 1],
-                                     cChars cell[static 1] );
+ODDCSV_API bool view_csv_cell_o( oCsvParser p[static 1],
+                                 oCsvCell cell[static 1] );
+
+ODDCSV_API bool view_csv_row_o( oCsvParser p[static 1],
+                                oVarCsvRow row[static 1] );
 
 /*******************************************************************************
 

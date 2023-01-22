@@ -1,5 +1,5 @@
 #include "clingo/lang/expect.h"
-#include "oddcsv/misc.h"
+#include "oddcsv/oCsvCell.h"
 
 TEMP_SLICE_C_(
    test,
@@ -22,10 +22,11 @@ int main( void )
 
    for_each_c_( test const*, t, tests )
    {
-      cRecorder* rec = &recorder_c_( 256 );
-      require_c_( store_raw_csv_cell_o( c_c( t->cell ), rec ) );
+      oCsvCell cell = { .x=c_c( t->cell ) };
+      cVarChars buf = var_chars_c_( 256 );
+      cChars tmp = decode_csv_cell_chars_o( cell, buf );
+      require_c_( not is_invalid_c_( tmp ) );
 
-      cChars tmp = recorded_chars_c( rec );
       bool res =  chars_is_c( tmp, t->exp );
       tap_descf_c( res, "expected '%s', got '%s'", t->exp, tmp.v );
    }
