@@ -22,7 +22,8 @@ int main( void )
    testSlice tests = slice_c_( test,
       t_( c_( "," ), "a,b,c", '_', '|', "a_b_c" ),
       t_( c_( "," ), "a,b\nc,d\n", '_', '|', "a_b|c_d" ),
-      t_( c_( "," ), "a\r\n,b\r\n,c\r\n", '_', '|', "a|b|c" )
+      t_( c_( ";" ), ";a\nb;", '_', '|', "_a|b_" ),
+      t_( c_( "," ), ",a\r\nb,\r\n,c\r\n", '_', '|', "_a|b_|_c" )
    );
 
    for_each_c_( test const*, t, tests )
@@ -33,7 +34,7 @@ int main( void )
       while ( not finished_csv_o( &p ) )
       {
          bool first = true;
-         while ( in_csv_row_o( &p ) )
+         while ( not finished_csv_row_o( &p ) )
          {
             if ( not first )
             {
@@ -44,7 +45,6 @@ int main( void )
             record_chars_c( rec, cell );
             first = false;
          }
-         move_to_next_csv_row_o( &p );
          if ( not finished_csv_o( &p ) )
          {
             record_char_c( rec, t->lineSep );

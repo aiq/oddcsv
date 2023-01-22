@@ -33,6 +33,9 @@ set( TEST_FILES
 #   ${TEST_DIR}/oddcsv/OJsonBuilder/append_json_bool_value.c
    # oCsvParser
    ${TEST_DIR}/oddcsv/oCsvParser/view_raw_csv_cell.c
+   # oCsvTable
+   ${TEST_DIR}/oddcsv/oCsvTable/iterate_csv_cells.c
+   ${TEST_DIR}/oddcsv/oCsvTable/iterate_csv_rows.c
 )
 
 ################################################################################

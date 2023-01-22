@@ -100,7 +100,7 @@ char const* built_csv_cstr_o( OCsvBuilder* b )
 static bool needs_quotes( cChars chars, oCsvBuilderCfg cfg )
 {
    cRune r;
-   iterate_runes_c_( itr, r, chars )
+   iterate_runes_c_( itr, &r, chars )
    {
       if ( r.c[0] == '\n' or
            r.c[0] == '\r' or
@@ -137,7 +137,7 @@ bool append_csv_cell_o( OCsvBuilder* b, cChars chars )
       return false;
    }
    cRune r;
-   iterate_runes_c_( itr, r, chars )
+   iterate_runes_c_( itr, &r, chars )
    {
       if ( not append_rune_c( b->b, r ) )
       {

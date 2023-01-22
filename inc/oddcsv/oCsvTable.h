@@ -53,4 +53,24 @@ ODDCSV_API cChars csv_table_cell_o( oCsvTable const table[static 1],
 ODDCSV_API oCsvRow csv_table_row_o( oCsvTable const table[static 1],
                                     int64_t row );
 
+/*******************************************************************************
+
+*******************************************************************************/
+
+#define iterate_csv_rows_o_( Itr, RowPtr, TablePtr )                           \
+   for ( cByte const* Itr = next_csv_row_o( TablePtr, NULL, RowPtr );          \
+         Itr != NULL;                                                          \
+         Itr = next_csv_row_o( TablePtr, Itr, RowPtr ) )
+ODDCSV_API cByte const* next_csv_row_o( oCsvTable const table[static 1],
+                                       cByte const* itr,
+                                       oCsvRow row[static 1] );
+
+#define iterate_csv_cells_o_( Itr, CellPtr, RowPtr )                           \
+   for ( cByte const* Itr = next_csv_cell_o( RowPtr, NULL, CellPtr );          \
+         Itr != NULL;                                                          \
+         Itr = next_csv_cell_o( RowPtr, Itr, CellPtr ) )
+ODDCSV_API cByte const* next_csv_cell_o( oCsvRow const row[static 1],
+                                         cByte const* itr,
+                                         cChars cell[static 1] );
+
 #endif

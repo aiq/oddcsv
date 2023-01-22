@@ -6,15 +6,25 @@
 
 *******************************************************************************/
 
-static void skip_sep( oCsvParser p[static 1] )
+static void skip_spaces( oCsvParser p[static 1] )
 {
    if ( p->cfg.trim )
       move_if_char_c( &(p->sca), ' ' );
+}
 
-   move_if_rune_c( &(p->sca), p->cfg.sep );
+static void skip_cell_end( oCsvParser p[static 1] )
+{
+   if ( move_if_rune_c( &(p->sca), p->cfg.sep ) )
+      return;
 
-   if ( p->cfg.trim )
-      move_if_char_c( &(p->sca), ' ' );
+   if ( move_if_char_c( &(p->sca), '\n' ) or
+        move_if_chars_c_( &(p->sca), "\r\n" ) )
+   {
+      p->finRow = true;
+      return;
+   }
+
+   p->finRow = finished_csv_o( p );
 }
 
 static bool on_cell_end( oCsvParser p[static 1] )
@@ -35,6 +45,7 @@ bool init_csv_parser_o( oCsvParser p[static 1], oCsvParseCfg cfg, cChars full )
 {
    p->cfg = cfg;
    p->sca = make_scanner_c_( full.s, full.v );
+   p->finRow = false;
    p->err = cNoError_;
    return true;
 }
@@ -45,32 +56,29 @@ bool init_csv_parser_o( oCsvParser p[static 1], oCsvParseCfg cfg, cChars full )
 
 bool finished_csv_o( oCsvParser p[static 1] )
 {
-   return p->sca.space == 0 or
-          unscanned_is_c( &(p->sca), "\n" ) or
-          unscanned_is_c( &(p->sca), "\r\n" );
+   bool res = p->sca.space == 0;
+   p->finRow = false;
+   return res;
 }
 
 bool move_to_next_csv_row_o( oCsvParser p[static 1] )
 {
-   return move_if_char_c( &(p->sca), '\n' ) or
-          move_if_chars_c_( &(p->sca), "\r\n" );
+   return true;
 }
 
-bool in_csv_row_o( oCsvParser p[static 1] )
+bool finished_csv_row_o( oCsvParser p[static 1] )
 {
-   return not on_char_c( &(p->sca), '\n' ) and
-          not on_char_c( &(p->sca), '\r' ) and
-          p->sca.space != 0;;
+   return p->finRow;
 }
 
 bool view_raw_csv_cell_o( oCsvParser p[static 1], cChars cell[static 1] )
 {
-   skip_sep( p );
+   skip_spaces( p );
 
    char const* beg = p->sca.mem;
    if ( !on_char_c( &(p->sca), '"' ) )
    {
-      if ( not on_cell_end( p ) )
+      while ( not on_cell_end( p ) )
       {
          move_scanner_c( &(p->sca), 1 );
       }
@@ -81,6 +89,7 @@ bool view_raw_csv_cell_o( oCsvParser p[static 1], cChars cell[static 1] )
       {
          *cell = trim_any_char_right_c_( *cell , " " );
       }
+      skip_cell_end( p );
       return true;
    }
 
@@ -108,6 +117,8 @@ bool view_raw_csv_cell_o( oCsvParser p[static 1], cChars cell[static 1] )
       }
 
       *cell = (cChars)atween_c_( beg, end );
+      skip_spaces( p );
+      skip_cell_end( p );
       return true;
    }
 }
@@ -134,7 +145,7 @@ bool parse_csv_string_row_o( oCsvParser p[static 1], CStringList* row )
       return false;
    }
 
-   while ( in_csv_row_o( p ) )
+   while ( not finished_csv_row_o( p ) )
    {
       cChars cell;
       if ( not view_raw_csv_cell_o( p, &cell ) )
