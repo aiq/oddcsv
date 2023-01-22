@@ -7,7 +7,6 @@ set( INC_FILES
    ${INC_DIR}/oddcsv/misc.h
    ${INC_DIR}/oddcsv/OCsvBuilder.h
    ${INC_DIR}/oddcsv/oCsvParser.h
-   ${INC_DIR}/oddcsv/oCsvTable.h
 )
 
 ################################################################################
@@ -17,7 +16,6 @@ set( SRC_FILES
    ${SRC_DIR}/oddcsv/misc.c
    ${SRC_DIR}/oddcsv/OCsvBuilder.c
    ${SRC_DIR}/oddcsv/oCsvParser.c
-   ${SRC_DIR}/oddcsv/oCsvTable.c
 )
 
 ################################################################################
@@ -29,13 +27,8 @@ set( TEST_FILES
    # OCsvBuilder
    ${TEST_DIR}/oddcsv/OCsvBuilder/append_csv_row.c
    ${TEST_DIR}/oddcsv/OCsvBuilder/OCsvBuilder-overview.c
-   # oCsvCell
-#   ${TEST_DIR}/oddcsv/OJsonBuilder/append_json_bool_value.c
    # oCsvParser
    ${TEST_DIR}/oddcsv/oCsvParser/view_raw_csv_cell.c
-   # oCsvTable
-   ${TEST_DIR}/oddcsv/oCsvTable/iterate_csv_cells.c
-   ${TEST_DIR}/oddcsv/oCsvTable/iterate_csv_rows.c
 )
 
 ################################################################################
