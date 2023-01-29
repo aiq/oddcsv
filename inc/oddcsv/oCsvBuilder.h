@@ -3,8 +3,7 @@
 
 #include "clingo/lang/CObject.h"
 #include "clingo/lang/error.h"
-#include "clingo/type/cCharsSlice.h"
-#include "clingo/type/cRune.h"
+#include "clingo/string/cStringBuilder.h"
 #include "oddcsv/apidecl.h"
 
 /*******************************************************************************
@@ -21,18 +20,13 @@ struct oCsvBuildCfg
 };
 typedef struct oCsvBuildCfg oCsvBuildCfg;
 
-struct oCsvBuilderCfg
+struct oCsvBuilder
 {
-   cRune sep;
-   bool useCRLF;
-   bool quoteSpace;
+   cStringBuilder b;
+   oCsvBuildCfg cfg;
+   int64_t count;
 };
-typedef struct oCsvBuilderCfg oCsvBuilderCfg;
-
-ODDCSV_API extern cMeta const O_CsvBuilderMeta;
-
-struct OCsvBuilder;
-typedef struct OCsvBuilder OCsvBuilder;
+typedef struct oCsvBuilder oCsvBuilder;
 
 /*******************************************************************************
 ********************************************************************* Functions
@@ -40,30 +34,46 @@ typedef struct OCsvBuilder OCsvBuilder;
 
 *******************************************************************************/
 
-#define new_csv_builder_o_( Sep )                                              \
-   new_csv_builder_o( rune_c( Sep ) )
-ODDCSV_API OCsvBuilder* new_csv_builder_o( cRune sep );
+#define csv_build_cfg_o_( Sep, ... )                                           \
+   (oCsvBuildCfg){ .sep=rune_c( Sep ), __VA_ARGS__ }
 
-#define make_csv_builder_o_( ... )                                             \
-   make_csv_builder_o( (oCsvBuilderCfg){__VA_ARGS__} )
-ODDCSV_API OCsvBuilder* make_csv_builder_o( oCsvBuilderCfg cfg );
+#define init_csv_builder_o_( Builder, Sep, Cap )                              \
+   init_csv_builder_o( (Builder), csv_build_cfg_o_( Sep ), (Cap) )
+ODDCSV_API inline bool init_csv_builder_o( oCsvBuilder b[static 1],
+                                           oCsvBuildCfg cfg,
+                                           int64_t cap )
+{
+   b->cfg = cfg;
+   return init_string_builder_c( &b->b, cap );
+}
+
+ODDCSV_API inline void cleanup_csv_builder_o( oCsvBuilder b[static 1] )
+{
+   return cleanup_string_builder_c( &b->b );
+}
 
 /*******************************************************************************
 
 *******************************************************************************/
 
-ODDCSV_API bool csv_builder_has_error_o( OCsvBuilder* b );
+ODDCSV_API bool csv_builder_has_error_o( oCsvBuilder b[static 1] );
 
 ODDCSV_API bool push_csv_builder_error_o( cErrorStack es[static 1],
-                                          OCsvBuilder* b );
+                                          oCsvBuilder b[static 1] );
 
 /*******************************************************************************
 
 *******************************************************************************/
 
-ODDCSV_API cChars built_csv_o( OCsvBuilder* b );
+ODDCSV_API inline cChars built_csv_o( oCsvBuilder b[static 1] )
+{
+   return built_chars_c( &(b->b) );
+}
 
-ODDCSV_API char const* built_csv_cstr_o( OCsvBuilder* b );
+ODDCSV_API inline char const* built_csv_cstr_o( oCsvBuilder b[static 1] )
+{
+   return built_cstr_c( &(b->b) );
+}
 
 /*******************************************************************************
 
@@ -71,11 +81,11 @@ ODDCSV_API char const* built_csv_cstr_o( OCsvBuilder* b );
 
 #define append_csv_cell_o_( B, Cstr )                                          \
    append_csv_cell_o( (B), c_c( Cstr ) )
-ODDCSV_API bool append_csv_cell_o( OCsvBuilder* b, cChars chars );
+ODDCSV_API bool append_csv_cell_o( oCsvBuilder b[static 1], cChars chars );
 
-ODDCSV_API bool append_csv_row_o( OCsvBuilder* b, cCharsSlice row );
+ODDCSV_API bool append_csv_row_o( oCsvBuilder b[static 1], cCharsSlice row );
 
-ODDCSV_API bool finish_csv_row_o( OCsvBuilder* b );
+ODDCSV_API bool finish_csv_row_o( oCsvBuilder b[static 1] );
 
 /*******************************************************************************
 
@@ -83,19 +93,19 @@ ODDCSV_API bool finish_csv_row_o( OCsvBuilder* b );
 
 #define append_csv_double_cell_o_( B, Value )                                  \
    append_csv_double_cell_o( (B), (Value), "" )
-ODDCSV_API bool append_csv_double_cell_o( OCsvBuilder* b,
+ODDCSV_API bool append_csv_double_cell_o( oCsvBuilder b[static 1],
                                           double value,
                                           char const fmt[static 1] );
 
 #define append_csv_int64_cell_o_( B, Value )                                   \
    append_csv_int64_cell_o( (B), (Value), "" )
-ODDCSV_API bool append_csv_int64_cell_o( OCsvBuilder* b,
+ODDCSV_API bool append_csv_int64_cell_o( oCsvBuilder b[static 1],
                                          int64_t value,
                                          char const fmt[static 1] );
 
 #define append_csv_uint64_cell_o_( B, Value )                                  \
    append_csv_uint64_cell_o( (B), (Value), "" )
-ODDCSV_API bool append_csv_uint64_cell_o( OCsvBuilder* b,
+ODDCSV_API bool append_csv_uint64_cell_o( oCsvBuilder b[static 1],
                                           uint64_t value,
                                           char const fmt[static 1] );
 

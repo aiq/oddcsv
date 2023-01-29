@@ -13,7 +13,7 @@ TEMP_SLICE_C_(
 )
 #define t_( ... ) ((test){__VA_ARGS__})
 
-#define c_( Sep, ... ) (oCsvParseCfg){ .sep=rune_c( Sep ), __VA_ARGS__ }
+#define c_ csv_parse_cfg_o_
 
 int main( void )
 {

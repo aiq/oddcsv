@@ -35,9 +35,14 @@ typedef struct oCsvParser oCsvParser;
 
 *******************************************************************************/
 
+#define csv_parse_cfg_o_( Sep, ... )                                           \
+   (oCsvParseCfg){ .sep=rune_c( Sep ), __VA_ARGS__ }
+
+#define init_csv_parser_o_( Parser, Sep, Csv )                                 \
+   init_csv_parser_o_( (Parser), csv_parse_cfg_o_( Sep ), (Csv) )
 ODDCSV_API bool init_csv_parser_o( oCsvParser p[static 1],
                                    oCsvParseCfg cfg,
-                                   cChars full );
+                                   cChars csv );
 
 /*******************************************************************************
 

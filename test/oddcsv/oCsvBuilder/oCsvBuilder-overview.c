@@ -1,5 +1,5 @@
 #include "clingo/lang/expect.h"
-#include "oddcsv/OCsvBuilder.h"
+#include "oddcsv/oCsvBuilder.h"
 
 #include "clingo/io/print.h"
 
@@ -17,7 +17,8 @@ int main( void )
 {
    init_tap_c_();
 
-   OCsvBuilder* b = new_csv_builder_o_( "," );
+   oCsvBuilder* b = &(oCsvBuilder){0};
+   init_csv_builder_o_( b, ",", 256 );
 
    cCharsSlice header = cs_c_( "name", "alter_ego", "year" );
    heroSlice heros = slice_c_( hero,
@@ -51,6 +52,6 @@ int main( void )
    bool res =  chars_is_c( csv, exp );
    tap_descf_c( res, "expected '%s', got '%s'", exp, csv.v );
 
-   release_c( b );
+   cleanup_csv_builder_o( b );
    return finish_tap_c_();
 }

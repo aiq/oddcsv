@@ -1,49 +1,24 @@
-#include "oddcsv/OCsvBuilder.h"
+#include "oddcsv/oCsvBuilder.h"
 
 #include "clingo/io/write_type.h"
-#include "clingo/string/CStringBuilder.h"
-
-/*******************************************************************************
-********************************************************* Types and Definitions
-********************************************************************************
- 
-*******************************************************************************/
-
-struct OCsvBuilder
-{
-   CStringBuilder* b;
-   oCsvBuilderCfg cfg;
-   int64_t count;
-};
-
-static inline void cleanup( void* instance )
-{
-   OCsvBuilder* b = instance;
-   release_c( b->b );
-}
-
-cMeta const O_CsvBuilderMeta = {
-   .desc = stringify_c_( OCsvBuilder ),
-   .cleanup = &cleanup
-};
 
 /*******************************************************************************
 ********************************************************************* Functions
 ********************************************************************************
 
 *******************************************************************************/
-
-OCsvBuilder* new_csv_builder_o( cRune sep )
+/*
+oCsvBuilder* new_csv_builder_o( cRune sep )
 {
-   return make_csv_builder_o( (oCsvBuilderCfg){
+   return make_csv_builder_o( (oCsvBuilder){
       .sep = sep,
       .useCRLF = false
    } );
 }
 
-OCsvBuilder* make_csv_builder_o( oCsvBuilderCfg cfg )
+oCsvBuilder* make_csv_builder_o( oCsvBuilderCfg cfg )
 {
-   OCsvBuilder* b = new_object_c_( OCsvBuilder, &O_CsvBuilderMeta );
+   oCsvBuilder* b = new_object_c_( oCsvBuilder, &O_CsvBuilderMeta );
    if ( b == NULL )
    {
       return NULL;
@@ -61,18 +36,25 @@ OCsvBuilder* make_csv_builder_o( oCsvBuilderCfg cfg )
 
    return b;
 }
+*/
+
+extern inline bool init_csv_builder_o( oCsvBuilder b[static 1],
+                                       oCsvBuildCfg cfg,
+                                       int64_t cap );
+
+extern inline void cleanup_csv_builder_o( oCsvBuilder b[static 1] );
 
 /*******************************************************************************
 
 *******************************************************************************/
 
-bool csv_builder_has_error_o( OCsvBuilder* b )
+bool csv_builder_has_error_o( oCsvBuilder b[static 1] )
 {
    return false;
 }
 
 bool push_csv_builder_error_o( cErrorStack es[static 1],
-                               OCsvBuilder* b )
+                               oCsvBuilder b[static 1] )
 {
    return false;
 }
@@ -81,23 +63,15 @@ bool push_csv_builder_error_o( cErrorStack es[static 1],
 
 *******************************************************************************/
 
-cChars built_csv_o( OCsvBuilder* b )
-{
-   must_exist_c_( b );
-   return built_chars_c( b->b );
-}
+extern inline cChars built_csv_o( oCsvBuilder b[static 1] );
 
-char const* built_csv_cstr_o( OCsvBuilder* b )
-{
-   must_exist_c_( b );
-   return built_cstr_c( b->b );
-}
+extern inline char const* built_csv_cstr_o( oCsvBuilder b[static 1] );
 
 /*******************************************************************************
 
 *******************************************************************************/
 
-static bool needs_quotes( cChars chars, oCsvBuilderCfg cfg )
+static bool needs_quotes( cChars chars, oCsvBuildCfg cfg )
 {
    cRune r;
    iterate_runes_c_( itr, &r, chars )
@@ -116,42 +90,42 @@ static bool needs_quotes( cChars chars, oCsvBuilderCfg cfg )
    return false;
 }
 
-bool append_csv_cell_o( OCsvBuilder* b, cChars chars )
+bool append_csv_cell_o( oCsvBuilder b[static 1], cChars chars )
 {
    must_exist_c_( b );
 
    if ( b->count > 0 )
    {
-      if ( not append_rune_c( b->b, b->cfg.sep ) )
+      if ( not append_rune_c( &b->b, b->cfg.sep ) )
          return false;
    }
 
    b->count++;
    if ( not needs_quotes( chars, b->cfg ) )
    {
-      return append_chars_c( b->b, chars );
+      return append_chars_c( &b->b, chars );
    }
 
-   if ( not append_char_c( b->b, '"' ) )
+   if ( not append_char_c( &b->b, '"' ) )
    {
       return false;
    }
    cRune r;
    iterate_runes_c_( itr, &r, chars )
    {
-      if ( not append_rune_c( b->b, r ) )
+      if ( not append_rune_c( &b->b, r ) )
       {
          return false;
       }
       if ( r.c[0] == '"' )
       {
-         if ( not append_char_c( b->b, '"' ) )
+         if ( not append_char_c( &b->b, '"' ) )
          {
             return false;
          }
       }
    }
-   if ( not append_char_c( b->b, '"' ) )
+   if ( not append_char_c( &b->b, '"' ) )
    {
       return false;
    }
@@ -159,9 +133,8 @@ bool append_csv_cell_o( OCsvBuilder* b, cChars chars )
    return true;
 }
 
-bool append_csv_row_o( OCsvBuilder* b, cCharsSlice row )
+bool append_csv_row_o( oCsvBuilder b[static 1], cCharsSlice row )
 {
-   must_exist_c_( b );
    for_each_c_( cChars const*, itr, row )
    {
       if ( not append_csv_cell_o( b, *itr ) )
@@ -170,17 +143,15 @@ bool append_csv_row_o( OCsvBuilder* b, cCharsSlice row )
    return finish_csv_row_o( b );
 }
 
-bool finish_csv_row_o( OCsvBuilder* b )
+bool finish_csv_row_o( oCsvBuilder b[static 1] )
 {
-   must_exist_c_( b );
-
    b->count = 0;
    bool res = true;
    if ( b->cfg.useCRLF )
    {
-      res &= append_char_c( b->b, '\r' );
+      res &= append_char_c( &b->b, '\r' );
    }
-   res &= append_char_c( b->b, '\n' );
+   res &= append_char_c( &b->b, '\n' );
    return res;
 }
 
@@ -188,11 +159,10 @@ bool finish_csv_row_o( OCsvBuilder* b )
 
 *******************************************************************************/
 
-bool append_csv_double_cell_o( OCsvBuilder* b,
+bool append_csv_double_cell_o( oCsvBuilder b[static 1],
                                double value,
                                char const fmt[static 1] )
 {
-   must_exist_c_( b );
    cRecorder* rec = &recorder_c_( 256 );
    if ( not write_double_c( rec, value, fmt ) )
    {
@@ -202,11 +172,10 @@ bool append_csv_double_cell_o( OCsvBuilder* b,
    return append_csv_cell_o( b, recorded_chars_c( rec ) );
 }
 
-bool append_csv_int64_cell_o( OCsvBuilder* b,
+bool append_csv_int64_cell_o( oCsvBuilder b[static 1],
                               int64_t value,
                               char const fmt[static 1] )
 {
-   must_exist_c_( b );
    cRecorder* rec = &recorder_c_( 256 );
    if ( not write_int64_c( rec, value, fmt ) )
    {
@@ -215,11 +184,10 @@ bool append_csv_int64_cell_o( OCsvBuilder* b,
    return append_csv_cell_o( b, recorded_chars_c( rec ) );
 }
 
-bool append_csv_uint64_cell_o( OCsvBuilder* b,
+bool append_csv_uint64_cell_o( oCsvBuilder b[static 1],
                                uint64_t value,
                                char const fmt[static 1] )
 {
-   must_exist_c_( b );
    cRecorder* rec = &recorder_c_( 256 );
    if ( not write_uint64_c( rec, value, fmt ) )
    {
