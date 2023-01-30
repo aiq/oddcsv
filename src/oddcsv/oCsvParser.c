@@ -141,23 +141,3 @@ bool view_csv_row_o( oCsvParser p[static 1], oVarCsvRow row[static 1] )
    row->s = i;
    return true;
 }
-
-/*******************************************************************************
-
-*******************************************************************************/
-/*
-static bool clear_string_list( CStringList* row )
-{
-   cVecInfo const* info = info_of_string_list_c( row );
-   while ( info->count > 0 )
-   {
-      if ( not remove_from_string_list_c( row, info->count-1 ) )
-         return false;
-   }
-   return true;
-}
-*/
-bool parse_csv_string_row_o( oCsvParser p[static 1], CStringList* row )
-{
-   return false;
-}

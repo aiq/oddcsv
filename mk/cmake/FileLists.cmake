@@ -29,7 +29,7 @@ set( TEST_FILES
    ${TEST_DIR}/oddcsv/oCsvCell/decode_csv_cell_chars.c
    # oCsvParser
    ${TEST_DIR}/oddcsv/oCsvParser/view_csv_cell.c
-   #${TEST_DIR}/oddcsv/oCsvParser/view_csv_row.c
+   ${TEST_DIR}/oddcsv/oCsvParser/view_csv_row.c
 )
 
 ################################################################################
